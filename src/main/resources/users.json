@@ -1,0 +1,12 @@
+[
+  {
+    "username": "jaek",
+    "bcryptHash": "$2a$10$wr4srrKXpSNzuFI54VowC.cLGqcFbMScp4PsIRn7ke3Ry7PCyGfRy",
+    "roles": ["admin"]
+  },
+  {
+    "username": "testuser",
+    "bcryptHash": "$2a$10$wr4srrKXpSNzuFI54VowC.cLGqcFbMScp4PsIRn7ke3Ry7PCyGfRy",
+    "roles": ["viewer"]
+  }
+]

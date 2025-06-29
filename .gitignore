@@ -1,0 +1,37 @@
+# Gradle build files
+.gradle/
+build/
+
+# IDE files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+*.classpath
+*.project
+
+# VS Code
+.vscode/
+
+# OS generated files
+.DS_Store
+
+# Logs and runtime files
+*.log
+*.pid
+
+# Temporary files
+cookie.txt
+boot.log
+server.pid
+tmp/
+
+# Ignore files under data/worksheets but keep directory structure
+/data/worksheets/**
+
+# Only include base.json and empty.json in data/templates; ignore all other files there
+/data/templates/*
+!/data/templates/base.json
+!/data/templates/empty.json

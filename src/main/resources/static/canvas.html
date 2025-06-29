@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FlowSheets Canvas</title>
+  <style>
+    body, html { margin:0; padding:0; height:100%; width:100%; overflow:hidden; }
+    #toolbar { position: fixed; top:0; left:0; right:0; height:40px; background:#f0f0f0; border-bottom:1px solid #ccc; display:flex; align-items:center; padding:0 8px; z-index:100; }
+    #modeToggle button { margin-right:8px; }
+    #saveBtn { margin-right:8px; }
+    #status { font-size:0.9em; color:#666; }
+    #canvas { position:absolute; top:40px; bottom:0; left:0; right:0; background:#fafafa; }
+    .node { position:absolute; width:120px; min-height:40px; border:1px solid #333; background:#eee; cursor: move; padding:4px; box-sizing:border-box; }
+    .node.FUTURE { background:#ddd; }
+    .node.IN_PROCESS { background:#fffae6; background-image:repeating-linear-gradient(45deg,#ffffff,#ffffff 4px,#ffe680 4px,#ffe680 8px); }
+    .node.COMPLETE { background:#d4f6d4; background-image:repeating-linear-gradient(45deg,#ffffff,#ffffff 4px,#a0d0a0 4px,#a0d0a0 8px); }
+    .node.OVERRIDDEN { background:#e6f0ff; background-image:repeating-linear-gradient(45deg,#ffffff,#ffffff 4px,#a8c8ff 4px,#a8c8ff 8px); }
+    .node.ERROR { background:#ffd6d6; background-image:repeating-linear-gradient(45deg,#ffffff,#ffffff 4px,#ff9999 4px,#ff9999 8px); }
+    .label { font-weight:bold; margin-bottom:4px; }
+    .task { display:flex; align-items:center; font-size:0.9em; }
+    .task input[type=checkbox] { margin-right:4px; }
+    .context-menu { position: absolute; z-index: 1000; background: white; border: 1px solid #ccc; box-shadow: 2px 2px 6px rgba(0,0,0,0.2); }
+    /* Disable pointer events on the SVG overlay so clicks hit underlying nodes */
+    #canvas svg, #canvas svg * { pointer-events: none; }
+    .context-menu ul { list-style: none; margin: 0; padding: 0; }
+    .context-menu li { padding: 4px 8px; cursor: pointer; }
+    .context-menu li:hover { background-color: #eee; }
+  </style>
+</head>
+<body>
+  <div id="toolbar">
+    <div id="modeToggle"></div>
+    <button id="saveBtn">Save</button>
+    <span id="status"></span>
+  </div>
+  <div id="canvas"></div>
+  <script src="js/canvas.js"></script>
+</body>
+</html>
