@@ -6,26 +6,26 @@ FlowSheets is a local web-based tool for creating **workflow templates** and run
 ### Key Features
 - **Templates and Worksheets** – reusable templates spawn worksheets used to track real processes.
 - **Three Interaction Modes** – *Flow* (interactive run-time), *Edit* (structural changes), and *View* (read-only).
-- **Visual Canvas** – drag-and-drop node editing, directional connections, sub-workflow nodes, configuration table component, and optional action buttons.
+- **Visual Canvas** – drag-and-drop editing with a single generic flow node. Any node can connect to multiple downstream nodes to create branches. Additional components such as sub-workflow nodes, configuration tables, notes, and optional action buttons are available.
 - **Task Plug‑ins** – built-in task types include CheckboxTask, SvnTagTask, and InputTask. Additional types can be added via a Java Service Provider Interface.
 - **Real-Time Collaboration** – updates are pushed via WebSockets so multiple users see changes immediately. A user list panel shows who is connected and their current mode.
 - **Confirm/Revert** – privileged users can store “Confirm Snapshots” and later revert to any snapshot. Undo/redo tracks recent session edits.
 - **Persistence** – all worksheets, templates, and snapshots stored as JSON in a file hierarchy. Activity logs rotate daily and are ISO‑8601 stamped.
 - **Accessibility** – every state uses both color and pattern cues, ensuring WCAG AA compliance.
-- **Technology Stack** – Java 17, Spring Boot 3, Gradle, Spring Security, STOMP over WebSocket for real-time sync, and a React/TypeScript front end.
+- **Technology Stack** – Java 17, Spring Boot 3, Gradle, Spring Security, STOMP over WebSocket for real-time sync, and a front end initially built with plain JavaScript (React/TypeScript optional).
 
-## Clarifications Needed
-1. **Asynchronous split/merge nodes** – should support for async branching be part of the first release or deferred?
-2. **Generative AI interface** – is integration with external AI agents required initially or planned for a later phase?
-3. **Front-end framework** – is React with TypeScript the preferred choice for the UI, or is plain JavaScript acceptable?
-4. **Task plug‑in packaging** – should new tasks be loaded dynamically from external JARs at runtime or compiled into the application?
+## Clarifications
+- **Asynchronous branching** – branching is achieved by connecting any node to multiple targets. No dedicated split/merge nodes are planned for the first release.
+- **Generative AI interface** – integration with external AI agents will be deferred; design APIs with future AI use in mind.
+- **Front-end framework** – the initial UI can be implemented in plain JavaScript. React with TypeScript is optional.
+- **Task plug‑in packaging** – core tasks are compiled in now, but the plug‑in SPI should allow dynamic loading from external JARs later.
 
 ## Implementation Plan
 The following phased tasks build the minimal working version and prepare for future extensions. Each step should be checked off once complete.
 
 1. **Project Skeleton**
    - Set up a Gradle-based Spring Boot project with Java 17.
-   - Create a React/TypeScript front-end project served by Spring Boot.
+   - Create a front-end served by Spring Boot using plain JavaScript (React/TypeScript optional).
    - Define the folder structure for `/data/templates/` and `/data/worksheets/`.
 
 2. **Authentication and Roles**
@@ -38,9 +38,9 @@ The following phased tasks build the minimal working version and prepare for fut
    - Implement load/save utilities and an append-only activity log (daily rotated).
 
 4. **Task Plug‑in SPI**
-   - Design the Java ServiceLoader interface for task types.
-   - Implement built-in tasks: CheckboxTask, SvnTagTask (server-side credentials in `application.yaml`), and InputTask.
-   - Support periodic auto-refresh (default every 10 minutes) and manual recheck.
+   - Design the Java ServiceLoader interface for task types with future support for loading external JARs at runtime.
+   - Implement built-in tasks: CheckboxTask, SvnTagTask (server-side credentials in `application.yaml`), and InputTask. These tasks are packaged with the application.
+   - Support periodic auto-refresh (default every 10 minutes) and manual recheck.
 
 5. **REST and WebSocket API**
    - Provide endpoints under `/api/v1/` for listing, creating, renaming, deleting, and copying worksheets and templates.
@@ -57,10 +57,10 @@ The following phased tasks build the minimal working version and prepare for fut
    - Display task checklist within each node and allow ticking/unticking or override.
 
 8. **Components and Sub-Workflows**
-   - Implement the configuration table component and generic action button component.
+   - Provide a single flow node type; nodes may branch to multiple targets.
+   - Implement the configuration table, generic action button, and note components.
    - Support sub-workflow nodes that open in a new tab or window.
    - Add a dockable Component-Repo palette (Edit mode only).
-
 9. **Collaboration Features**
    - Show connected users with their interaction mode in a panel on the canvas.
    - Ensure simultaneous edits merge correctly and broadcast via WebSocket.
