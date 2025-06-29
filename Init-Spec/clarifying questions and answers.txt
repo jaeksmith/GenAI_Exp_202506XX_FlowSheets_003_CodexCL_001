@@ -1,0 +1,100 @@
+################################################
+
+1 Clarifying questions & suggestions
+#	Question (or suggestion)	Why it matters
+Q1	Node colours – in the image, green, yellow, and pink nodes appear. Do colours encode status (e.g. “ready / working / needs-attention”) or category (e.g. “analysis / dev / QA”)? Or should colour be fully user-configurable?	Determines whether colour is data or pure cosmetics.
+Q2	“Aspects” name – you hinted it might not be ideal. Options: Checks, Criteria, Tasks, Gates. Any preference?	Locks down vocabulary before we write code / docs.
+Q3	Flow Mode vs Edit Mode – The grey “Flow Mode” pill in the mock-up looks like a toggle. I’m assuming:
+• Flow = interactive / run-time view (can tick aspects, override, accept, etc.)
+• Edit = structural changes (add nodes, connections, buttons, etc.)
+Is it just those two modes, or do you foresee others (e.g. “Read-only review”)?	Affects UI affordances and permissions.
+Q4	Component Repo panel – in the mock-up it lists “Component Type 1…3”. Will users drag these onto the sheet to create typed nodes, or is that a read-only library?	Impacts how drag-and-drop works and how new component palettes are plugged in.
+Q5	User-list panel – should it do more than show avatars? e.g. click an avatar to DM, kick, or change someone’s mode?	Defines real-time collaboration features.
+Q6	Auto-Checks beyond SVN tag – you’ve specced the first plug-in (regex SVN tag detector). Do we also want early stubs for:
+• Git tag / branch check
+• HTTP endpoint returning JSON (CI status, Sonar, etc.)	Guides the plug-in API shape.
+Q7	Backend stack – earlier you said other work should be Java-based; is Java (Spring Boot) + WebSockets + React/TS acceptable here too, or do you want something lighter / different?	Makes sure the generated code lands in a stack you’re happy maintaining.
+Q8	Storage back-end – still OK with: worksheets & templates as readable JSON files on disk (so they can be committed to SVN/Git), plus an append-only activity-log file per worksheet?	Confirms persistence model before we wire tests.
+Q9	Real-time sync strategy – okay to use WebSockets for near-instant updates? (If not, we’ll fall back to short polling.)	Impacts infra requirements.
+Q10	Auth roles – you mentioned roles but not the list. Draft idea: admin, editor, contributor (can tick/bypass aspects), viewer. Good starting point?	Needed for the replaceable security module.
+Q11	Undo/redo depth – is a per-worksheet undo stack of, say, the last 200 actions sufficient, or do you need full, infinite history (which gets heavy)?	Drives storage & performance tuning.
+Q12	API versioning – do you need hard version negotiation from day 1, or is “v1” path prefix enough until first breaking change?	Simpler now vs future-proofing.
+
+##############
+
+Q1) Here I've idealized that the general color represents whether that state is complete, in process, or future ...
+noting that one might work on aspects of different nodes, but that this gives a simple visual on 'where' things are at.
+Should really include both color and patterns so color blindness is not an issue.
+Potentially we should have a visual indicator if we can figure out a nice way to do so of the overall node state separate from color/pattern - unsure.
+(These ideas should be generalize to the possible states as well as potentially things like whether they were manually overridden, etc)
+
+Note that the words on the nodes represent a given use of this tool to track a project - it's a very hack version not representing full states, just the idea of stepwise flow with sub-aspects.
+What the flow is actually used is proprietary to the flow itself - and possibly derived from it's template.  That is if a user created a software-lifecycle template and created an instance, that its being used for tracking a project through the lifecycle is an artifact of that flow design, not the tool itself.
+The tool might be used, for example, to create a step-wise cooking recipe, including first getting the ingredients... or tracking ones prgress throug the day - where the user might add new nodes for after work stuff they plan for that day, etc.  (The user might create a week template that has links to day templates that when instantiated, creates a whole week basic plan).
+
+Per configurability of colors/patterns might be a good later phase item - can we note future items to potentially design for now to make adding later easier?
+
+Note that colors should, ideally be, subtle/gentle ... patterns ideally also ... by default anyway ... here and where-ever such as used to indicate states, etc.
+
+Q2) Definitely should not use 'aspects', heh - lets not use that work in the spec.  Tasks might be good ... noting that these might be varying types of things - whether simply checking off the node is complete or other.  (Criteria is quite close, but tasks I think is better?)
+
+Q3) A view only mode might be good - e.g. if one wants to observe, but ensure not to mess something up - or if they don't have permits to modify.
+Yup - Flow and Edit interpretations sound correct ... not sure if there is a better name for flow?
+User should be able to right click on the worksheet surface to toggle the mode.
+The 'Flow Mode pill' should be a component that one can place on the worksheet or take off.  (I'd say new worksheets would have this on by default ... though, potentially, we could have a new-template template which is used when a new template is created not from another template ... and that would define if it's on there...).
+I think I mentioned having the background potentially color - and we should pattern - based on mode also ... (potentially solid for normal - non-edit, interactive - usage).
+
+
+Q4) The Component Repo would ideally be the various types of things that can be dropped on the worksheet ...
+At least in the first version, lets presume this is draggable pseudo window - a dragable div - that only appears in edit mode.
+Lets have this as a tabbed within - with primary items (including nodes) - recently used on the second tab - and third tab be a search list - showing all by default.
+The user should be able to drag these from this panel on to the worksheet.
+
+Q5) This panel is for/of users currently interacting with this particular worksheet.
+Initially lets just have the user list panel show the people, their name, and the mode their in - mebbe a background color representing the mode (matching the mode color) also.
+We'll potentially add functions off these user-visuals later - potentially being able to right-click > menu > action and/or drag the user-visuals to other, etc.
+Here the user-vis in this panel is associated with state visualization.
+Ideally we might want to be able to drag a user to an input that represents a user - for example if we want to be able to associate a path/state/task with a user, then might drag the user to that item...
+This would be something to add in a future phase - and should be noted as such - but design/implementation could be set to support this future modifications.
+
+Q6) Really need to sus out the tasks, their attributes, what they can do, etc.
+For example, there might be an svn check for an item existing at a certian location - where the URL uses a variable representing a worksheet value - base project URL - and then adds a path possibly with regex.
+The worksheet would ideally check on open, one worksheet recheck/sync, mebbe on some timeout, if the user was away and switch back after a certain amount of time, when prompted by a user (via check or worksheet refresh)...
+
+Need to spec out some others ... for now, lets exclude git/http items unless we can think of something for these.
+There should be a manually checked item - with a label - that requires user to check - so just meant as a user checking.
+There should be an item that the user must provide a value for - I think they should still check it, but would be a labelled input ideally (along with the ~checkbox).
+
+Q7) I think that stack works.
+Can we use gradle for build?
+
+Q8) Yeh, lets go with that - json files and allow the user to check these into repo, etc.
+(We might automate checkins later - the potential target corp uses SVN, but we'll deal with that in the future - possible pluggable target when we do).
+
+Q9) Yes, web-sockets would be wanted - this should be a live interacting system.
+
+Q10) Yeh, lets start with those.
+Ideally we want to have capabilities separate of roles - but for now we can 1-to-1 these...
+We should be able to assign user capabilities per worksheet.
+We need some way to add users/passwords and assign roles - it can be simple initially - even if just file based.
+
+Q11) Last 200 is likely very sufficient.
+We need a way to confirm/save the whole state of the worksheet - and should be able to revert to the last confirmed state.
+Ideally we want to do this per item on the sheet also - e.g. confirm and be able to revert.
+Where-as undo would be in order step wise rollback ... revert would to a given state - I guess undo would undo a revert - so reverts would be stacked... unsure here?
+
+Q12) v1 path prefix I think works...
+
+---
+
+Lets call this FlowSheets.
+
+User should be able to override (bypass) any item - e.g. including automated tasks/checks.
+
+Can we have activity log date stamped (so logs can be cleaned)?
+
+The node connecting and node moving notes might be too coagulated ... potentially need more detail or separation to better detail.
+Can you also review my original notes?  (Perhaps some of this was lost when my computer crashed - will review after revisions).
+
+Lets have the auot-refresh be every 10 minutes mebbe?
+
